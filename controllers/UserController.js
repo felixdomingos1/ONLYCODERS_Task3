@@ -1,28 +1,28 @@
 import { genSalt, hash as _hash } from 'bcrypt';
 import User, { findOne } from '../models/User';
 
-export function register(req, res, next) {
+export function register(req, res) {
     let { email, password } = req.body;
 
-    // Check if email or password is missing
     if (!email || !password) {
         return res.status(500).json({
             errors: [
                 {
-                    error: "Email and password are required"
+                    message: "Email and password are required"
                 }
             ]
         });
     }
 
     //Check if the user already exists
+
     findOne({ email: email }).then(user => {
         if (user) {
             return res.status(422).json(
                 {
                     errors: [
                         {
-                            error: "User with this email already exists"
+                            message: "User already exists"
                         }
                     ]
                 }   
@@ -33,8 +33,10 @@ export function register(req, res, next) {
                 email: email,
                 password: password
             })
+            
             //Using bycrypt to encrypt passwords
-            genSalt(10, function (err, salt) {
+
+            genSalt(8, function (err, salt) {
                 _hash(password, salt, function (err, hash) {
                     if (err)
                         throw err;
@@ -55,7 +57,7 @@ export function register(req, res, next) {
         }
     }).catch(err => {
         res.status(500).json({
-            errors: [{ error: 'Something went wrong' }]
+            errors: [{ message: 'Something went wrong' }]
         })
     })
 }
