@@ -3,7 +3,6 @@ import User, { findOne } from '../models/User';
 
 export function register(req, res) {
     let { email, password } = req.body;
-
     if (!email || !password) {
         return res.status(500).json({
             errors: [
